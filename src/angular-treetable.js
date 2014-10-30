@@ -77,11 +77,11 @@ angular.module('ngTreetable', [])
          * @param shouldExpand whether or not all descendants of `parentElement` should also be expanded
          */
         $scope.addChildren = function(parentElement, shouldExpand) {
-            var parentNode = parentElement ? parentElement.scope().node : null;
+            var parentNode = parentElement ? angular.element(parentElement).scope().node : null;
             var parentId = parentElement ? parentElement.data('ttId') : null;
 
             if (parentElement) {
-                parentElement.scope().loading = true;
+                angular.element(parentElement).scope().loading = true;
             }
 
             $q.when(params.getNodes(parentNode)).then(function(data) {
@@ -89,14 +89,14 @@ angular.module('ngTreetable', [])
                 var elementPromises = [];
                 angular.forEach(data, function(node) {
                     var rowPromise = $scope.compileElement(node, parentId, parentNode).then(function(row) {
-                        newElements.push(row.get(0));
+                        newElements.push(row[0]);
                     });
                     elementPromises.push(rowPromise);
                 });
 
                 $q.all(elementPromises).then(function() {
                     var parentTtNode = parentId != null ? table.treetable("node", parentId) : null;
-                    $element.treetable('loadBranch', parentTtNode, newElements);
+                    table.treetable('loadBranch', parentTtNode, newElements);
 
                     if (shouldExpand) {
                         angular.forEach(newElements, function(el) {
@@ -104,20 +104,20 @@ angular.module('ngTreetable', [])
                         });
                     }
 
-                    if (parentElement) parentElement.scope().loading = false;
+                    if (parentElement) angular.element(parentElement).scope().loading = false;
                 });
 
             });
         }
 
         $scope.onNodeExpand = function() {
-            if (this.row.scope().loading) return; // make sure we're not already loading
+            if (angular.element(this.row).scope().loading) return; // make sure we're not already loading
             table.treetable('unloadBranch', this); // make sure we don't double-load
             $scope.addChildren(this.row, false);
         }
 
         $scope.onNodeCollapse = function() {
-            if (this.row.scope().loading) return; // make sure we're not already loading
+            if (angular.element(this.row).scope().loading) return; // make sure we're not already loading
             table.treetable('unloadBranch', this);
         }
 
