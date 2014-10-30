@@ -50,7 +50,7 @@ angular.module('ngTreetable', [])
     .controller('TreetableController', ['$scope', '$element', '$compile', '$templateCache', '$q', '$http', function($scope, $element, $compile, $templateCache, $q, $http) {
 
         var params = $scope.ttParams;
-        var table = $element;
+         var table = jQuery($element);
 
         $scope.compileElement = function(node, parentId, parentNode) {
             var tpl = params.getTemplate(node);
